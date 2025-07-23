@@ -11,7 +11,7 @@ export const addNewAddress = createAsyncThunk(
   '/address/addNewAddress',
   async (formData) => {
     const response = await axios.post(
-      'http://localhost:5000/api/shop/address/add',
+      'https://fashion-website-backend.vercel.app/api/shop/address/add',
       formData
     );
     return response.data;
@@ -23,19 +23,18 @@ export const fetchAllAddress = createAsyncThunk(
   '/address/fetchAllAddress',
   async (userId) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/address/get/${userId}`
+      `https://fashion-website-backend.vercel.app/api/shop/address/get/${userId}`
     );
     return response.data;
   }
 );
-
 
 // PUT /update/:userId/:addressId
 export const editAddress = createAsyncThunk(
   '/address/editAddress',
   async ({ userId, addressId, formData }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/shop/address/update/${userId}/${addressId}`,
+      `https://fashion-website-backend.vercel.app/api/shop/address/update/${userId}/${addressId}`,
       formData
     );
     return response.data;
@@ -47,12 +46,11 @@ export const deleteAddress = createAsyncThunk(
   '/address/deleteAddress',
   async ({ userId, addressId }) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/shop/address/delete/${userId}/${addressId}`
+      `https://fashion-website-backend.vercel.app/api/shop/address/delete/${userId}/${addressId}`
     );
     return response.data;
   }
 );
-
 
 const addressSlice = createSlice({
   name: 'address',
@@ -63,14 +61,10 @@ const addressSlice = createSlice({
       .addCase(addNewAddress.pending, (state) => {
         state.isLoading = true;
       })
-      // .addCase(addNewAddress.fulfilled, (state, action) => {
-      //   state.isLoading = false;
-      //   state.addressList = action.payload.data;
-      // })
-            .addCase(addNewAddress.fulfilled, (state, action) => {
+      .addCase(addNewAddress.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload?.data) {
-          state.addressList.push(action.payload.data); // ✅ Fix
+          state.addressList.push(action.payload.data);
         }
       })
       .addCase(addNewAddress.rejected, (state) => {
