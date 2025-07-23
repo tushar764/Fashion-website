@@ -1,12 +1,10 @@
-// ✅ fashion-backend/index.js
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+require('dotenv').config({ path: '.env.local' });
 
 const connectToMongo = require('./db');
 const authRouter = require('./Routes/auth-routes');
-const cookieParser = require('cookie-parser');
-const express = require('express');
-require('dotenv').config({ path: '.env.local' });
-const cors = require('cors');
-
 const adminProductsRouter = require('./Routes/admin/product-routes');
 const adminOrderRouter = require('./Routes/admin/order-routes');
 const shopProductsRouter = require('./Routes/shop/product-routes');
@@ -20,30 +18,24 @@ const commonFeautreRouter = require('./Routes/common/feature-routes');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ Updated CORS config
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://fashion-website-frontend.onrender.com'
-  ],
-  methods: ['GET', 'POST', 'DELETE', 'PUT'],
-  allowedHeaders: [
-    "Content-Type",
-    'Authorization',
-    'Cache-Control',
-    'Expires',
-    'Pragma'
-  ],
-  credentials: true
-}));
+// ✅ CORS setup for Render frontend and localhost
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://fashion-website-frontend.onrender.com',
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Routes
+// Routes
 app.use('/api/auth', authRouter);
-app.use("/api/admin/products", adminProductsRouter);
-app.use("/api/admin/orders", adminOrderRouter);
+app.use('/api/admin/products', adminProductsRouter);
+app.use('/api/admin/orders', adminOrderRouter);
 app.use('/api/shop/products', shopProductsRouter);
 app.use('/api/shop/cart', shopCartRouter);
 app.use('/api/shop/address', shopAddressRouter);
