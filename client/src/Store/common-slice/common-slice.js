@@ -3,14 +3,16 @@ import axios from 'axios';
 
 const initialState = {
   isLoading: false,
-  featureImageList: [], // ✅ Correct spelling
+  featureImageList: [],
 };
 
 // ✅ Fetch feature images
 export const getFeatureImages = createAsyncThunk(
   'common/getFeatureImages',
   async () => {
-    const response = await axios.get('http://localhost:5000/api/common/feature/get');
+    const response = await axios.get(
+      'https://fashion-website-backend.vercel.app/api/common/feature/get'
+    );
     return response.data;
   }
 );
@@ -19,9 +21,10 @@ export const getFeatureImages = createAsyncThunk(
 export const addFeatureImage = createAsyncThunk(
   'common/addFeatureImage',
   async (image) => {
-    const response = await axios.post('http://localhost:5000/api/common/feature/add', {
-      image,
-    });
+    const response = await axios.post(
+      'https://fashion-website-backend.vercel.app/api/common/feature/add',
+      { image }
+    );
     return response.data;
   }
 );
@@ -38,11 +41,11 @@ const commonSlice = createSlice({
       })
       .addCase(getFeatureImages.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.featureImageList = action.payload.data; // ✅ fixed typo here
+        state.featureImageList = action.payload.data;
       })
       .addCase(getFeatureImages.rejected, (state) => {
         state.isLoading = false;
-        state.featureImageList = []; // ✅ fixed typo here
+        state.featureImageList = [];
       });
   },
 });
