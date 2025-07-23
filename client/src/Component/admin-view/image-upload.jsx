@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import { Label } from "../ui/all";
@@ -7,17 +6,17 @@ import { Skeleton } from "../ui/skeleton";
 import { Button } from "../../Component/ui/button";
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 
-function ProductImageUpload({ imageFile, setImageFile,
-  uploadedImageUrl, setUploadedImageUrl,
+function ProductImageUpload({
+  imageFile,
+  setImageFile,
+  uploadedImageUrl,
+  setUploadedImageUrl,
   imageLoadingState,
   setimageLoadingState,
   isEditMode,
-  isCustomStyling=false,
-
+  isCustomStyling = false,
 }) {
   const inputRef = useRef(null);
-
-  console.log(isEditMode, '')
 
   function handleImageFileChange(event) {
     const selectedFile = event.target.files?.[0];
@@ -48,37 +47,40 @@ function ProductImageUpload({ imageFile, setImageFile,
   }
 
   async function uploadedImagetoCloudinary() {
-    setimageLoadingState(true)
+    setimageLoadingState(true);
     const data = new FormData();
-    data.append('my_file', imageFile)
-    const response = await axios.post('http://localhost:5000/api/admin/products/upload-image', data)
+    data.append("my_file", imageFile);
+
+    // ✅ Changed only this line (URL)
+    const response = await axios.post(
+      "https://fashion-website-backend.vercel.app/api/admin/products/upload-image",
+      data
+    );
 
     console.log(response, "response");
 
     if (response?.data?.success)
-      setUploadedImageUrl(response.data.result.url)
-    setimageLoadingState(false)
+      setUploadedImageUrl(response.data.result.url);
+    setimageLoadingState(false);
   }
 
-  console.log(imageFile);
-  // useEffect(()=>{
-  //   if(imageFile!==null) uploadedImagetoCloudinary
-  // },[imageFile])
   useEffect(() => {
     if (imageFile !== null) {
       uploadedImagetoCloudinary();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageFile]);
-  return (
-<div className={`w-full mt-4 ${isCustomStyling ? '' : 'max-w-md mx-auto'}`}>
 
+  return (
+    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
       <Label className="text-lg font-semibold mb-2 block">Upload a photo</Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onClick={handleClickUpload}
-        className={`${isEditMode ? "opacity-60" :""}border-2 border-dashed rounded-lg p-4 cursor-pointer`}
+        className={`${
+          isEditMode ? "opacity-60" : ""
+        } border-2 border-dashed rounded-lg p-4 cursor-pointer`}
       >
         <Input
           id="image-upload"
@@ -86,25 +88,21 @@ function ProductImageUpload({ imageFile, setImageFile,
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          // disable={isEditMode}
           disabled={isEditMode}
         />
 
         {!imageFile ? (
           <div
-            className={`flex flex-col items-center justify-center h-32 text-center ${isEditMode ? "cursor-not-allowed" : ""
-              }`}
+            className={`flex flex-col items-center justify-center h-32 text-center ${
+              isEditMode ? "cursor-not-allowed" : ""
+            }`}
           >
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
             <span>Drag and drop or click to upload image</span>
           </div>
-
-
         ) : imageLoadingState ? (
           <Skeleton className="h-10 bg-gray-100" />
         ) : (
-          //  imageLoadingState ?
-          //  <Skeleton className="h-10 bg-gray-100"/>:
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <FileIcon className="w-8 h-8 text-primary mr-2" />
