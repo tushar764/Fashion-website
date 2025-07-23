@@ -6,33 +6,31 @@ const User = require('../../Models/User');
 const registerUser = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
-    const checkUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
-    if (checkUser) {
-      return res.json({
+    if (existingUser) {
+      return res.status(400).json({
         success: false,
-        message: 'User with this email already exists. Try another email.',
+        message: 'User already exists',
       });
     }
 
-    const hashPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
       userName,
       email,
-      password: hashPassword,
+      password: hashedPassword,
     });
 
     await newUser.save();
+
     res.status(200).json({
       success: true,
-      message: 'User registration successful',
+      message: 'User registered successfully',
     });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: 'Some error occurred',
-    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -41,31 +39,17 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const checkUser = await User.findOne({ email });
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(401).json({ success: false, message: 'User not found' });
 
-    if (!checkUser) {
-      return res.status(401).json({
-        success: false,
-        message: "User doesn't exist. Please register first.",
-      });
-    }
-
-    const checkPasswordMatch = await bcrypt.compare(password, checkUser.password);
-    if (!checkPasswordMatch) {
-      return res.status(401).json({
-        success: false,
-        message: 'Incorrect Password. Please try again.',
-      });
-    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const token = jwt.sign(
-      {
-        id: checkUser._id,
-        role: checkUser.role,
-        email: checkUser.email,
-        userName: checkUser.userName,
-      },
-      'kingiskong', // ✅ Your actual secret key (not from env)
+      { id: user._id, email: user.email, role: user.role, userName: user.userName },
+      'kingiskong', // your JWT_SECRET
       { expiresIn: '7d' }
     );
 
@@ -80,43 +64,34 @@ const loginUser = async (req, res) => {
       success: true,
       message: 'Logged in successfully',
       user: {
-        email: checkUser.email,
-        role: checkUser.role,
-        id: checkUser._id,
-        userName: checkUser.userName,
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        userName: user.userName,
       },
     });
-  } catch (e) {
-    console.error('Login error:', e);
-    res.status(500).json({
-      success: false,
-      message: 'Internal Server Error',
-    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Login failed' });
   }
 };
 
 // Logout
 const logoutUser = (req, res) => {
-  res
-    .clearCookie('token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-    })
-    .json({
-      success: true,
-      message: 'Logged out successfully!',
-    });
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+  });
+
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
 };
 
-// Middleware to verify JWT
-const authMiddleware = async (req, res, next) => {
+// Middleware
+const authMiddleware = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Unauthorized user!',
-    });
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 
   try {
@@ -124,10 +99,7 @@ const authMiddleware = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: 'Unauthorized user!',
-    });
+    return res.status(401).json({ success: false, message: 'Invalid token' });
   }
 };
 
