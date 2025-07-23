@@ -18,16 +18,14 @@ const commonFeautreRouter = require('./Routes/common/feature-routes');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ CORS setup for Render frontend and localhost
-app.use(
-  cors({
-    origin: [
-      'http://localhost:3000',
-      'https://fashion-website-frontend.onrender.com',
-    ],
-    credentials: true,
-  })
-);
+// ✅ CORS setup
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://fashion-website-frontend.onrender.com',
+  ],
+  credentials: true,
+}));
 
 app.use(express.json());
 app.use(cookieParser());
