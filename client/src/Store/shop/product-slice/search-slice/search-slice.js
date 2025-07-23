@@ -10,7 +10,7 @@ const initialState = {
 export const getSearchResults = createAsyncThunk(
   'search/getSearchResults',
   async ({ keyword }) => {
-    const response = await axios.get(`http://localhost:5000/api/shop/search/${keyword}`);
+    const response = await axios.get(`https://fashion-website-backend.vercel.app/api/shop/search/${keyword}`);
     return response.data;
   }
 );
@@ -20,9 +20,8 @@ const searchSlice = createSlice({
   name: 'search',
   initialState,
   reducers: {
-
-    resetSearchResults:(state)=>{
-      state.searchResults=[]
+    resetSearchResults: (state) => {
+      state.searchResults = [];
     }
   },
   extraReducers: (builder) => {
@@ -41,6 +40,5 @@ const searchSlice = createSlice({
   },
 });
 
-export const {resetSearchResults}=searchSlice.actions
-
+export const { resetSearchResults } = searchSlice.actions;
 export default searchSlice.reducer;
