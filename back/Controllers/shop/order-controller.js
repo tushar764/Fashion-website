@@ -3,6 +3,7 @@ const Order = require('../../Models/Order');
 const Cart = require('../../Models/Cart');
 const Product = require('../../Models/Product');
 
+// ✅ CREATE ORDER AND INITIATE PAYPAL
 const createOrder = async (req, res) => {
   try {
     const {
@@ -14,22 +15,34 @@ const createOrder = async (req, res) => {
       paymentMethod,
       paymentStatus,
       totalAmount,
-      orderDate,
-      paymentId,
-      payerId,
-
+      orderDate
     } = req.body;
 
+    // ✅ 1. Create order in MongoDB first
+    const newOrder = new Order({
+      userId,
+      cartId,
+      cartItems,
+      addressInfo,
+      orderStatus,
+      paymentMethod,
+      paymentStatus,
+      totalAmount,
+      orderDate,
+    });
 
+    const savedOrder = await newOrder.save();
 
+    // ✅ 2. Setup PayPal payment
     const create_payment_json = {
       intent: 'sale',
       payer: {
         payment_method: 'paypal'
       },
       redirect_urls: {
-        return_url: 'http://localhost:3000/shop/paypal-return',
-        cancel_url: 'http://localhost:3000/shop/paypal-cancel'
+        // ✅ Use production client URL (not localhost)
+        return_url: 'https://fashion-client.vercel.app/shop/paypal-return',
+        cancel_url: 'https://fashion-client.vercel.app/shop/payment-cancel'
       },
       transactions: [
         {
@@ -38,16 +51,16 @@ const createOrder = async (req, res) => {
               name: item.title,
               sku: item.productId,
               price: Number(item.price).toFixed(2),
-
               currency: 'USD',
-              quantity: String(item.quantity)        
+              quantity: String(item.quantity)
             }))
           },
           amount: {
             currency: 'USD',
             total: totalAmount.toFixed(2)
           },
-          description: 'description'
+          description: 'Fashion Order',
+          custom: savedOrder._id.toString() // optional, for advanced usage
         }
       ]
     };
@@ -60,50 +73,38 @@ const createOrder = async (req, res) => {
           message: 'Error while creating PayPal Payment'
         });
       } else {
-        const newlyCreatedOrder = new Order({
-          userId,
-          cartId,
-
-          cartItems,
-          addressInfo,
-          orderStatus,
-          paymentMethod,
-          paymentStatus,
-          totalAmount,
-          orderDate,
-          paymentId,
-          payerId,
-        });
-
-        await newlyCreatedOrder.save();
+        savedOrder.paymentId = paymentInfo.id;
+        await savedOrder.save();
 
         const approvalURL = paymentInfo.links.find(link => link.rel === 'approval_url')?.href;
 
         res.status(201).json({
           success: true,
           approvedURL: approvalURL,
-          orderId: newlyCreatedOrder._id
+          orderId: savedOrder._id
         });
       }
     });
+
   } catch (e) {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some Error occurred"
+      message: 'Some Error occurred'
     });
   }
 };
 
+// ✅ CAPTURE PAYMENT AFTER PAYPAL REDIRECT
 const capturePayment = async (req, res) => {
   try {
     const { paymentId, payerId, orderId } = req.body;
 
-    let order = await Order.findById(orderId);
+    const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: 'Order cannot be found',
+        message: 'Order not found',
       });
     }
 
@@ -113,27 +114,20 @@ const capturePayment = async (req, res) => {
     order.paymentId = paymentId;
     order.payerId = payerId;
 
-    for(let item of order.cartItems){
-      // let product = await Product.findByid(item.productId)
-      let product = await Product.findById(item.productId)
-
-      if(!product){
+    // Deduct product stock
+    for (let item of order.cartItems) {
+      let product = await Product.findById(item.productId);
+      if (!product) {
         return res.status(404).json({
-          success:false,
-          message:`Not enough stock for this product ${product.title}`
-        })
-
+          success: false,
+          message: `Product not found: ${item.title}`
+        });
       }
-      product.totalStock -=item.quantity;
+      product.totalStock -= item.quantity;
       await product.save();
-
     }
 
-    const userId = order.userId;
-
-    // ✅ Delete user's cart by userId (Fix!)
-    await Cart.deleteOne({ userId });
-
+    await Cart.deleteOne({ userId: order.userId });
     await order.save();
 
     res.status(200).json({
@@ -141,6 +135,7 @@ const capturePayment = async (req, res) => {
       message: 'Order confirmed',
       data: order,
     });
+
   } catch (e) {
     console.log(e);
     res.status(500).json({
@@ -149,9 +144,6 @@ const capturePayment = async (req, res) => {
     });
   }
 };
-
-
-
 
 const getAllOrdersByUser = async (req, res) => {
   try {
@@ -204,7 +196,5 @@ const getOrdersDetails = async (req, res) => {
     });
   }
 };
-
-
 
 module.exports = { createOrder, capturePayment, getAllOrdersByUser, getOrdersDetails };
