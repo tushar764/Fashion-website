@@ -18,11 +18,10 @@ const commonFeautreRouter = require('./Routes/common/feature-routes');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ CORS setup
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://fashion-website-frontend.onrender.com',
+    'https://fashion-website-6zmg.onrender.com'
   ],
   credentials: true,
 }));
@@ -30,7 +29,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+// API Routes
 app.use('/api/auth', authRouter);
 app.use('/api/admin/products', adminProductsRouter);
 app.use('/api/admin/orders', adminOrderRouter);
@@ -42,8 +41,9 @@ app.use('/api/shop/search', shopSearchRouter);
 app.use('/api/shop/review', shopReviewRouter);
 app.use('/api/common/feature', commonFeautreRouter);
 
+// Health check route
 app.get('/', (req, res) => {
-  res.send('fashion backend is here');
+  res.send('Fashion backend is here');
 });
 
 app.listen(port, () => {
