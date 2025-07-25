@@ -4,139 +4,150 @@
 ![fashion2](https://github.com/user-attachments/assets/fcbf910c-6516-4ca6-af9a-4c73e920b005)
 ![fashion3](https://github.com/user-attachments/assets/b87c3000-0937-47e8-9ea1-984cb9e42290)
 
-This is a **full-stack e-commerce fashion website** featuring a **Redux-powered shopping cart**, secure user authentication, and **PayPal integration** for seamless payments. Built using **React**, **Node.js**, **MongoDB**, and deployed with **Vercel**.
+A **full-stack fashion e-commerce platform** built with **React**, **Redux Toolkit**, **Node.js**, **Express**, and **MongoDB**. Includes **PayPal integration**, secure **JWT-based authentication**, and a protected **Admin Dashboard** for managing orders and statuses. Fully responsive and deployed on **Vercel**.
 
 ---
 
 ## ✨ Features Overview
 
-- 🛒 **Add to Cart & Checkout** functionality (Redux managed)
-- 💳 **PayPal Integration** for online payments
-- 🔑 JWT-secured login sessions with bcrypt-hashed passwords
-- 🌐 Full stack app: React (frontend), Node.js + Express (backend)
-- ☁️ MongoDB Atlas for database storage
-- 🖥 Responsive UI with dark/light theme toggle
+- 🛒 Add to Cart, Update Quantity, Remove Items
+- 🔐 Secure Authentication with JWT + Bcrypt
+- 💳 PayPal Checkout Integration
+- 🎛️ Admin Dashboard (Protected Route)
+- 📦 Order & Payment Management
+- 🌗 Light/Dark Theme Toggle
+- ⚛️ State Managed with Redux Toolkit
+- 📱 Fully Responsive on All Devices
 
 ---
 
-## 🧱 Component Breakdown
+## 🧱 Architecture & Components
 
-### 👤 Authentication Flow
-- User signs up and logs in with email & password
-- JWT token issued on successful login
-- Auth token is used to access protected routes
+### 👤 Authentication
 
-### 🛍 Shopping Features
-- Browse and search fashion products
-- Add items to cart (Redux-managed)
-- View cart, update quantity, or remove items
-- Checkout and complete payment using **PayPal**
-- View order confirmation after payment
+- User Registration & Login via Email + Password
+- Passwords hashed with `bcrypt.js`
+- JWT token issued and stored securely
+- Protected routes using middleware
 
-### 🧠 Backend – Node.js + Express.js
-- RESTful APIs for:
-  - Authentication
-  - Product management
-  - Cart and order handling
-  - PayPal payment capture
-- JWT middleware for protecting routes
-- Role-based access control *(planned)*
+### 🛍 Shopping Experience
 
-### 🖥 Frontend – React.js + Redux
-- Pages:
-  - Register
-  - Login
-  - Product Listing
-  - Cart
-  - Checkout
-  - Order Success
-- State managed with Redux Toolkit
-- Light/Dark theme support
-- Toast alerts for user actions
+- View & Filter Fashion Products
+- Redux-powered Cart (add/update/remove items)
+- Checkout with live PayPal payment
+- View Order Summary and Payment Confirmation
 
-### 🗄 Database – MongoDB Atlas
-- Hosted in the cloud with **MongoDB Atlas**
+### 🧑‍💼 Admin Dashboard
+
+- Protected **admin-only** route (`/admin`)
+- View all placed orders by users
+- **Change order status** (e.g., Pending → Delivered)
+- Orders and statuses updated via Redux slice and backend routes
+- Admin access is restricted via JWT role verification
+- - 📝 Product CRUD from admin panel
+
+### ⚙️ Backend (Node.js + Express.js)
+
+- RESTful API for:
+  - Auth (Login/Register)
+  - Products
+  - Cart/Orders
+  - PayPal Payment Capture
+  - Admin Status Management
+- Role-based Access Control
+- Middleware for route protection
+
+### 🖥 Frontend (React.js + Redux Toolkit)
+
+- Built using React + React Router + Tailwind CSS
+- State managed with:
+  - `authSlice`
+  - `cartSlice`
+  - `orderSlice`
+  - `adminSlice`
+- Toast notifications using `react-toastify`
+- Custom reusable components (Cards, Modals, Buttons)
+
+### 🗄️ Database (MongoDB Atlas + Mongoose)
+
+- Cloud database hosted on **MongoDB Atlas**
 - Collections:
-  - Users (email, password)
-  - Products (title, image, price, stock)
-  - Orders (user, items, payment status)
-- Mongoose used for schema modeling and validation
+  - `users`: (email, password, role)
+  - `products`: (title, image, price, stock)
+  - `orders`: (user, cart, payment details, status)
+- Models created using Mongoose schemas with validation
 
 ---
 
-## 🛡️ Security Features
+## 🛡️ Security
 
-- 🔐 Passwords hashed with `bcrypt.js`
-- 🧾 JWT-based authentication with expiry tokens
-- 📛 Middleware-protected routes
-- ⛔ Planned: Admin-only access and route restrictions
+- 🧂 Bcrypt password hashing
+- 🔐 JWT-based sessions
+- 🛡️ Admin-only protected APIs
+- 🧾 Token expiration & refresh handling
+- ⛔ 403/401 handling for unauthorized access
 
 ---
 
 ## 🧰 Tech Stack
 
-| Layer | Stack |
-|-------|-------|
-| Frontend | React.js, Redux, React Router, Tailwind CSS |
-| Backend | Node.js, Express.js |
-| Database | MongoDB Atlas + Mongoose |
-| Payment | PayPal REST SDK |
-| Auth | JWT, bcrypt.js |
-| Deployment | Vercel |
-
-<p align="left">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="40" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg" width="40" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="40" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="40" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="40" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" width="40" />
-  <img src="https://www.vectorlogo.zone/logos/vercel/vercel-icon.svg" width="40" />
-  <img src="https://www.vectorlogo.zone/logos/paypal/paypal-icon.svg" width="40" />
-</p>
+| Layer      | Stack                                  |
+|------------|----------------------------------------|
+| Frontend   | React.js, Redux Toolkit, Tailwind CSS  |
+| Backend    | Node.js, Express.js                    |
+| Database   | MongoDB Atlas + Mongoose               |
+| Auth       | JWT, bcrypt.js                         |
+| Payment    | PayPal REST API                        |
+| Deployment | Vercel                                 |
 
 ---
 
 ## 🚀 Deployment
 
-- **Frontend**: Hosted on **Vercel**
-- **Backend**: Hosted on **Vercel** *(also deployable via Render or Railway)*
-- **Database**: Cloud-hosted with **MongoDB Atlas**
+- **Frontend**: [Vercel (React)](https://fashion-client.vercel.app)
+- **Backend**: Vercel Serverless (Node/Express)
+- **Database**: MongoDB Atlas (Cloud-hosted)
 
-🔗 **Live Demo**: https://fashion-client.vercel.app
+---
+
+## 📦 Folder Structure (Simplified)
+
 
 ---
 
 ## 🔭 Future Enhancements
 
-- 🧑‍💼 Implement **role-based dashboard** (admin/user)
-- 📊 Admin analytics (sales, user stats, orders)
-- 📦 Stock and inventory tracking
-- 📱 PWA support for installable mobile app
+- 🧑‍💼 Admin dashboard analytics (sales, user stats)
+- 📦 Stock & Inventory Tracking
+- 📱 PWA Support for mobile installation
+- 📊 Graphs & Charts for order insights
 
 ---
 
 ## 📚 References
 
-- [React.js Docs](https://reactjs.org/docs/getting-started.html)
+- [React.js](https://reactjs.org/)
 - [Redux Toolkit](https://redux-toolkit.js.org/)
-- [Node.js Docs](https://nodejs.org/)
-- [Express.js Docs](https://expressjs.com/)
+- [Node.js](https://nodejs.org/)
+- [Express.js](https://expressjs.com/)
 - [MongoDB Atlas](https://www.mongodb.com/atlas/database)
-- [PayPal REST API](https://developer.paypal.com/docs/api/overview/)
-- [JWT](https://jwt.io/introduction)
-- [bcrypt.js GitHub](https://github.com/kelektiv/node.bcrypt.js)
+- [PayPal Developer](https://developer.paypal.com/)
+- [JWT](https://jwt.io/)
+- [bcrypt.js](https://github.com/kelektiv/node.bcrypt.js)
 
 ---
 
 ## 🙋‍♂️ About the Developer
 
-**Tushar Sain** — Full-stack developer passionate about secure, scalable, and modern web applications.
+**Tushar Sain** – Full Stack Developer passionate about building modern, secure, and scalable web applications.
 
-- 📧 Email: saintushar148@gmail.com  
-- 💼 LinkedIn: [linkedin.com/in/tushar-sain14](https://linkedin.com/in/tushar-sain14)  
+- 📧 Email: [saintushar148@gmail.com](mailto:saintushar148@gmail.com)
+- 💼 LinkedIn: [linkedin.com/in/tushar-sain14](https://linkedin.com/in/tushar-sain14)
 - 💻 GitHub: [github.com/tushar764](https://github.com/tushar764)
 
 ---
 
-⭐️ *Star this repo if you found it helpful or used it in your own project!*
+## ⭐️ Support
+
+If you found this project helpful, consider giving it a ⭐️ on GitHub and sharing it with others!
+
